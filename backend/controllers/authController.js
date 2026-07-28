@@ -24,7 +24,6 @@ exports.seedAdminUser = async () => {
       });
       console.log(`[Auth Seed] Dedicated Admin Account Created: AdminInvestiCore / @Admin10001`);
     } else {
-      // Ensure seeded admin is verified
       existingAdmin.isEmailVerified = true;
       await existingAdmin.save();
     }
@@ -79,14 +78,13 @@ exports.register = async (req, res) => {
       otpExpires,
     });
 
-    // Send OTP Verification Email
+    // Send OTP Verification Email to user's real email inbox
     await sendOTPVerificationEmail(user.email, user.name, otp);
 
     res.status(201).json({
       require_otp: true,
       email: user.email,
-      otp_debug: otp, // Returned for dev testing convenience
-      message: `Account created! Verification OTP sent to ${user.email}`,
+      message: `Account created! Verification OTP sent to your email inbox: ${user.email}`,
     });
   } catch (err) {
     res.status(500).json({ message: "Registration failed", detail: err.message, error: err.message });
@@ -118,7 +116,7 @@ exports.verifyOTP = async (req, res) => {
     }
 
     if (!user.otp || user.otp !== otp.toString().trim()) {
-      return res.status(400).json({ message: "Invalid OTP code. Please check and try again." });
+      return res.status(400).json({ message: "Invalid OTP code. Please check your email inbox and try again." });
     }
 
     if (user.otpExpires && new Date() > new Date(user.otpExpires)) {
@@ -167,8 +165,7 @@ exports.resendOTP = async (req, res) => {
     res.json({
       success: true,
       email: user.email,
-      otp_debug: newOtp,
-      message: `New OTP code sent to ${user.email}`,
+      message: `New OTP code sent to your email inbox: ${user.email}`,
     });
   } catch (err) {
     res.status(500).json({ message: "Failed to resend OTP", detail: err.message });
@@ -211,9 +208,8 @@ exports.login = async (req, res) => {
       return res.status(403).json({
         require_otp: true,
         email: user.email,
-        otp_debug: newOtp,
-        message: "Email verification required. An OTP has been sent to your email.",
-        detail: "Email verification required. An OTP has been sent to your email.",
+        message: "Email verification required. An OTP has been sent to your email inbox.",
+        detail: "Email verification required. An OTP has been sent to your email inbox.",
       });
     }
 

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Shield, Lock, Mail, User as UserIcon, Key, CheckCircle2, ArrowRight, RefreshCw } from "lucide-react";
+import { Shield, Lock, Mail, User as UserIcon, Key, CheckCircle2, ArrowRight, RefreshCw, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 export default function RegisterPage() {
@@ -19,7 +19,12 @@ export default function RegisterPage() {
   // OTP Verification State
   const [step, setStep] = useState<"register" | "otp">("register");
   const [otpCode, setOtpCode] = useState("");
-  const [debugOtp, setDebugOtp] = useState("");
+
+  // Google Modal State
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleEmail, setGoogleEmail] = useState("");
+  const [googleName, setGoogleName] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +42,6 @@ export default function RegisterPage() {
 
       if (res.data?.require_otp) {
         setStep("otp");
-        if (res.data.otp_debug) {
-          setDebugOtp(res.data.otp_debug);
-        }
         setMessage(res.data.message || `An OTP verification code was sent to ${email}`);
       } else {
         router.push("/login");
@@ -48,6 +50,31 @@ export default function RegisterPage() {
       setError(err.response?.data?.detail || err.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setGoogleLoading(true);
+
+    try {
+      const res = await api.post("/auth/google", {
+        email: googleEmail,
+        name: googleName || googleEmail.split("@")[0],
+        role,
+      });
+
+      if (res.data?.access_token) {
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refresh_token);
+        setShowGoogleModal(false);
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Google Authentication failed.");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -84,9 +111,6 @@ export default function RegisterPage() {
 
     try {
       const res = await api.post("/auth/resend-otp", { email });
-      if (res.data?.otp_debug) {
-        setDebugOtp(res.data.otp_debug);
-      }
       setMessage(res.data?.message || "New OTP code sent to your email!");
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to resend OTP.");
@@ -96,7 +120,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0b0f17] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#0b0f17] p-4 relative">
       <div className="w-full max-w-md bg-[#111827] border border-gray-800 rounded-xl p-8 shadow-2xl space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex p-3 rounded-full bg-blue-600/10 border border-blue-500/20 mb-2">
@@ -126,84 +150,120 @@ export default function RegisterPage() {
         )}
 
         {step === "register" ? (
-          <form onSubmit={handleRegisterSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                Full Name
-              </label>
-              <div className="relative">
-                <UserIcon className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Det. Alex Rivera"
-                  className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                Personnel Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="arivera@cyberunit.gov"
-                  className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                Position Assignment
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
-              >
-                <option value="investigator">Lead Investigator</option>
-                <option value="analyst">Forensic Analyst</option>
-              </select>
-              <p className="text-[11px] text-gray-500 mt-1">
-                *Note: Email verification via OTP is required upon registration.
-              </p>
-            </div>
-
+          <div className="space-y-4">
+            {/* Quick Google Sign-Up Button */}
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              type="button"
+              onClick={() => setShowGoogleModal(true)}
+              className="w-full bg-[#1e293b] hover:bg-[#334155] border border-gray-700 text-white font-semibold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2.5 shadow-md"
             >
-              {loading ? "Generating OTP..." : "Create Account & Send OTP"}
-              <ArrowRight className="w-4 h-4" />
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              Sign Up with Google
             </button>
-          </form>
+
+            <div className="relative flex items-center justify-center">
+              <div className="border-t border-gray-800 w-full"></div>
+              <span className="bg-[#111827] px-3 text-[11px] font-mono text-gray-500 uppercase tracking-widest absolute">
+                or register with email
+              </span>
+            </div>
+
+            <form onSubmit={handleRegisterSubmit} className="space-y-4 pt-1">
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                  <input
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Det. Alex Rivera"
+                    className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Personnel Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="arivera@cyberunit.gov"
+                    className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Position Assignment
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                >
+                  <option value="investigator">Lead Investigator</option>
+                  <option value="analyst">Forensic Analyst</option>
+                </select>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  *Note: Email verification via OTP is required upon registration.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? "Sending OTP to Inbox..." : "Create Account & Send OTP"}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
         ) : (
           <form onSubmit={handleVerifyOTP} className="space-y-5">
             <div>
@@ -222,14 +282,9 @@ export default function RegisterPage() {
                   className="w-full bg-gray-900 border border-amber-500/60 rounded-lg text-center font-mono text-xl tracking-widest py-3 text-white focus:border-amber-400 focus:outline-none"
                 />
               </div>
-
-              {debugOtp && (
-                <div className="mt-3 p-2.5 bg-amber-950/40 border border-amber-800/80 rounded-lg text-center">
-                  <span className="text-[11px] text-amber-300 font-mono block">
-                    🔑 Testing Mode OTP Code: <strong className="text-amber-400 text-sm font-bold">{debugOtp}</strong>
-                  </span>
-                </div>
-              )}
+              <p className="text-[11px] text-gray-400 text-center mt-2">
+                Check your email inbox ({email}) for your 6-digit verification code.
+              </p>
             </div>
 
             <button
@@ -267,6 +322,88 @@ export default function RegisterPage() {
           </Link>
         </div>
       </div>
+
+      {/* Google OAuth Modal Overlay */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#111827] border border-blue-500/40 rounded-2xl p-6 w-full max-w-sm space-y-5 shadow-2xl relative">
+            <button
+              onClick={() => setShowGoogleModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="inline-flex p-3 rounded-full bg-white/10 mb-1">
+                <svg className="w-8 h-8" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-white">Sign up with Google</h2>
+              <p className="text-xs text-gray-400">Join InvestiCore with your Google Account</p>
+            </div>
+
+            <form onSubmit={handleGoogleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Google Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={googleEmail}
+                  onChange={(e) => setGoogleEmail(e.target.value)}
+                  placeholder="alex.rivera@gmail.com"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Display Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={googleName}
+                  onChange={(e) => setGoogleName(e.target.value)}
+                  placeholder="Det. Alex Rivera"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="bg-emerald-950/40 p-3 rounded-lg border border-emerald-800 text-[11px] text-emerald-300 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                Google pre-verifies email address — No OTP code required!
+              </div>
+
+              <button
+                type="submit"
+                disabled={googleLoading}
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2"
+              >
+                {googleLoading ? "Authenticating with Google..." : "Continue to Platform"}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

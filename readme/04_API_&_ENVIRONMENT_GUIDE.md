@@ -19,11 +19,19 @@ NODE_ENV=development               # Environment mode
 CLIENT_URL=http://localhost:3000   # Frontend URL allowed by CORS
 
 # Database Configuration
-MONGO_URI=mongodb://127.0.0.1:27017/investicore_platform
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/investicore?retryWrites=true&w=majority
 
 # Authentication
 JWT_SECRET=investicore_secure_jwt_secret_token_2026_x89a
 JWT_EXPIRES_IN=7d
+
+# Real Email OTP Verification Delivery (Gmail SMTP / Custom SMTP)
+SMTP_SERVICE=gmail
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_16_digit_gmail_app_password
+SMTP_FROM=your_email@gmail.com
 
 # OpenAI Integration
 OPENAI_API_KEY=your_openai_api_key_here # Your OpenAI API key
@@ -68,9 +76,13 @@ All backend API routes are prefixed with `/api`:
 | Category | Endpoint | Method | Description |
 |---|---|---|---|
 | **Health** | `/api/health` | `GET` | Health check endpoint |
-| **Auth** | `/api/auth/register` | `POST` | Register new investigator account |
-| **Auth** | `/api/auth/login` | `POST` | Authenticate & get JWT token |
+| **Auth** | `/api/auth/register` | `POST` | Register new account (Lead Investigator / Forensic Analyst) |
+| **Auth** | `/api/auth/login` | `POST` | Authenticate via Email or Admin Username (`AdminInvestiCore`) |
+| **Auth** | `/api/auth/verify-otp` | `POST` | Verify 6-digit email verification OTP |
+| **Auth** | `/api/auth/resend-otp` | `POST` | Resend 6-digit email OTP to user's inbox |
+| **Auth** | `/api/auth/google` | `POST` | Google Sign-In & 1-click authentication |
 | **Auth** | `/api/auth/me` | `GET` | Get current logged-in user profile |
+| **Auth (Admin)** | `/api/auth/users` | `GET` | Fetch Personnel Audit Matrix (System Admin Exclusive) |
 | **Cases** | `/api/cases` | `GET` | List all investigation cases |
 | **Cases** | `/api/cases` | `POST` | Create a new investigation case |
 | **Cases** | `/api/cases/:id` | `GET` | Get specific case details & timeline |

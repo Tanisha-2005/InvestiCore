@@ -1,66 +1,81 @@
 # 🛡️ InvestiCore — AI-Powered Cyber Crime Investigation & Threat Intelligence Platform
 
-InvestiCore is an enterprise-grade digital forensics, live threat intelligence enrichment, and AI-assisted cybercrime investigation platform.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2014-000000?style=flat&logo=next.js)](https://nextjs.org/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js%20Express-339933?style=flat&logo=nodedotjs)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB%20Atlas-47A248?style=flat&logo=mongodb)](https://www.mongodb.com/)
+[![Security](https://img.shields.io/badge/Compliance-ISO%2FIEC%2027037-navy)](https://www.iso.org/)
+
+InvestiCore is a full-stack, enterprise-grade Digital Forensics and Cyber Crime Threat Intelligence Platform designed for law enforcement agencies, incident response teams, and forensic analysts.
 
 ---
 
-## 📖 Complete Documentation Folder
+## 👥 Role Hierarchy & Access Control (RBAC)
 
-We have created a dedicated, human-friendly **[`readme/`](./readme/)** folder with complete guides on how to run, configure, and troubleshoot InvestiCore:
+InvestiCore features a strict Role-Based Access Control (RBAC) architecture separating general personnel from administrative oversight:
 
-- 🚀 [**Getting Started Guide**](./readme/01_GETTING_STARTED.md) — 60-second setup and launch steps.
-- 💡 [**Project Overview**](./readme/02_PROJECT_OVERVIEW.md) — Plain English feature breakdown & real-world workflows.
-- 🏗️ [**Architecture & Tech Stack**](./readme/03_ARCHITECTURE_&_TECH_STACK.md) — Next.js, Node.js Express, MongoDB in-memory fallback, and AI engine details.
-- 🔑 [**API & Environment Setup**](./readme/04_API_&_ENVIRONMENT_GUIDE.md) — Free API key sources & backend endpoint reference.
-- ❓ [**Troubleshooting & FAQs**](./readme/05_TROUBLESHOOTING_&_FAQS.md) — Quick solutions to common errors.
+| Role Name | Public Self-Registration | Key Access Privileges |
+| :--- | :---: | :--- |
+| 🕵️ **Lead Investigator** (`investigator`) | ✅ **Allowed** | Full Case Creation, Evidence Vault Management, Chain of Custody Auditing, AI Summaries, PDF Export |
+| 🔍 **Forensic Analyst** (`analyst`) | ✅ **Allowed** | Threat Intel Scans (VirusTotal, AbuseIPDB, Shodan), IOC Graph Analysis, Timeline Event Tracking |
+| ⚙️ **System Administrator** (`admin`) | ❌ **Restricted (Seeded Only)** | Exclusive access to **Personnel Audit Matrix** (auditing user registrations, positions, emails, and clearances) |
+
+> 🔒 **Dedicated System Admin Credentials**:  
+> - **Admin Username**: `AdminInvestiCore` (or Email `admin@investicore.gov`)  
+> - **Admin Password**: `@Admin10001`  
+> - *Note: Self-registration with `admin` role is strictly disabled for security compliance.*
 
 ---
 
-## ⚡ Quick Start (Run Locally in 2 Steps)
+## 🔒 Security Features & Authentication
 
-### Step 1: Start Backend (Port 5000)
+1. **2-Step Real Email OTP Verification**:
+   - During account registration for Investigators and Analysts, a **6-Digit One-Time Password (OTP)** is generated and delivered directly to the user's real email inbox via SMTP (Gmail App Password / Custom SMTP).
+   - OTP codes expire after **10 minutes** and are strictly private to the email recipient.
+
+2. **Google Sign-In (OAuth 2.0 Integration)**:
+   - Supports 1-click **"Continue with Google"** authentication.
+   - Pre-verified Google accounts bypass manual OTP verification for seamless onboarding.
+
+3. **Dual Handle & Email Login**:
+   - Supports logging in using either Personnel Email Address or Admin Username (`AdminInvestiCore`).
+
+4. **Environment Credentials Privacy**:
+   - All environment variables (`.env`) containing API keys, database URIs, and SMTP passwords are strictly **git-ignored** and hidden from public repository pushes.
+
+---
+
+## 🚀 Technology Stack
+
+- **Frontend**: Next.js 14 (App Router), TypeScript, TailwindCSS, Lucide Icons, Axios
+- **Backend**: Node.js, Express.js, JWT, Nodemailer, BcryptJS
+- **Database**: MongoDB (Atlas Cloud / MongoMemoryServer fallback)
+- **Threat Intelligence APIs**: VirusTotal, AbuseIPDB, Shodan, Urlscan.io, AlienVault OTX
+- **AI Engine**: OpenAI GPT-4o / GPT-4o-mini API
+
+---
+
+## 🛠️ Quick Installation & Setup
+
+### 1. Backend Setup
 ```bash
 cd backend
 npm install
+cp .env.example .env
+# Fill your MongoDB URI, JWT Secret, and Gmail SMTP credentials in .env
 npm start
 ```
-> **Zero-Config Database**: If MongoDB is not installed locally, InvestiCore automatically spins up an **In-Memory MongoDB server** in RAM.
 
-### Step 2: Start Frontend Web UI (Port 3000)
-In a second terminal window:
+### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### Access Points
-- 💻 **Web Application UI**: [http://localhost:3000](http://localhost:3000)
-- 🔌 **Backend REST API**: [http://localhost:5000](http://localhost:5000)
-- 💚 **Backend Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+Visit **http://localhost:3000** in your browser.
 
 ---
 
-## 🛠️ Stack Architecture
-
-| Layer | Technology |
-|---|---|
-| **Frontend Web App** | Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Cytoscape.js, Chart.js |
-| **Backend REST API** | Node.js, Express.js, Mongoose, Multer, MailParser, Tesseract OCR, PDFKit |
-| **Database** | MongoDB (Local Instance or Auto In-Memory Server Fallback) |
-| **AI Forensics Assistant** | OpenAI API (`gpt-4o-mini`), Automated YARA & Sigma Rule Generators |
-| **Threat Intel Sweep** | Live API enrichment via VirusTotal, AbuseIPDB, URLScan.io, Shodan, AlienVault OTX |
-| **Security & Auth** | JWT Tokens, Password Hashing (`bcryptjs`), Rate Limiting, Helmet Headers |
-
----
-
-## 🔍 Key Capabilities
-
-1. **Case Management**: Priority tracking, MITRE ATT&CK tagging, timeline management.
-2. **Evidence Vault**: OCR image reading, PDF/EML parsing, hash extraction (MD5, SHA256), IP/Domain/Hash IOC extractor.
-3. **Legal Chain of Custody**: Cryptographic SHA-256 live disk hash verification, immutable audit log (`CustodyLog`), and tamper detection.
-4. **Multi-Source Threat Intel Sweep**: Live threat score aggregations across VirusTotal, AbuseIPDB, Shodan, AlienVault, URLScan.
-5. **AI Forensics Assistant**: Conversational Q&A over evidence files, automated YARA rule generation, and Sigma log rule generation.
-6. **Relationship Graph**: Interactive Cytoscape.js visual graph connecting suspects, IPs, domains, and cases.
-7. **Court-Ready PDF Exporter**: One-click multi-page PDF evidence package exporter with ISO/IEC 27037 legal compliance seals.
-
+## 📜 License & Compliance
+InvestiCore follows ISO/IEC 27037 standards for digital evidence handling and chain of custody preservation.

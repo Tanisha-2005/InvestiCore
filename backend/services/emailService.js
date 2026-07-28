@@ -1,10 +1,21 @@
 const nodemailer = require("nodemailer");
 
-// Create Transporter (Uses SMTP if configured, else console fallback)
+// Create Transporter (Optimized for Gmail SMTP & custom SMTP servers)
 const getTransporter = () => {
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    // Gmail Transport Optimization
+    if (process.env.SMTP_HOST === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail") {
+      return nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+    }
+    // Generic SMTP Transport
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: process.env.SMTP_HOST || "smtp.gmail.com",
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === "true",
       auth: {
@@ -21,7 +32,7 @@ exports.sendOTPVerificationEmail = async (toEmail, name, otp) => {
     const transporter = getTransporter();
 
     const mailOptions = {
-      from: `"InvestiCore Security" <${process.env.SMTP_FROM || "no-reply@investicore.gov"}>`,
+      from: `"InvestiCore Security" <${process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@investicore.gov"}>`,
       to: toEmail,
       subject: "🔒 InvestiCore Platform — Email Verification OTP Code",
       html: `
@@ -50,17 +61,17 @@ exports.sendOTPVerificationEmail = async (toEmail, name, otp) => {
 
     if (transporter) {
       await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Real OTP Email sent to ${toEmail}`);
+      console.log(`[Email Service] Real OTP Email successfully delivered to inbox: ${toEmail}`);
     } else {
       console.log(`=======================================================`);
-      console.log(`[OTP Verification Email] Target: ${toEmail}`);
+      console.log(`[OTP Verification Email] Target Inbox: ${toEmail}`);
       console.log(`[OTP Code]: ${otp}`);
       console.log(`=======================================================`);
     }
 
     return true;
   } catch (err) {
-    console.error(`[Email Service Error] Failed to send OTP email: ${err.message}`);
+    console.error(`[Email Service Error] Failed to send OTP email to ${toEmail}: ${err.message}`);
     return false;
   }
 };
