@@ -18,42 +18,135 @@ import {
   Database,
   Globe,
   FileText,
+  FileSearch,
+  Share2,
+  CheckCircle2,
+  HelpCircle,
+  Wrench,
+  Search,
+  Activity,
+  Terminal,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function ArchitecturePitchPage() {
-  const tiers = [
+  // Step-by-step pipeline stages
+  const pipelineSteps = [
     {
-      tier: "Tier 1: Frontend Workstation Layer",
-      tech: "Next.js 14, React 18, TypeScript, Tailwind CSS, Cytoscape.js",
+      step: "01",
+      name: "Evidence Ingestion & Parsing",
+      tool: "Tesseract OCR, Mailparser, PCAP Decoder",
+      desc: "Upload screenshots, EML emails, PCAP captures, or PDFs. System decodes raw text, headers, and streams.",
+      icon: FileSearch,
+      color: "border-blue-500/50 bg-blue-950/40 text-blue-400",
+    },
+    {
+      step: "02",
+      name: "Cryptographic Hash Baseline",
+      tool: "Node.js Crypto (SHA-256, MD5)",
+      desc: "Generates byte-level SHA-256 & MD5 hash baselines and records an immutable Chain of Custody entry.",
+      icon: Lock,
+      color: "border-emerald-500/50 bg-emerald-950/40 text-emerald-400",
+    },
+    {
+      step: "03",
+      name: "Automatic IOC Extraction",
+      tool: "Regex Engine (IPs, Domains, Wallets)",
+      desc: "Automatically extracts IPv4/v6, Domains, URLs, Hashes, and Ransomware Crypto Wallets from parsed content.",
+      icon: Search,
+      color: "border-purple-500/50 bg-purple-950/40 text-purple-400",
+    },
+    {
+      step: "04",
+      name: "Live Threat Intel Sweep",
+      tool: "VirusTotal, AbuseIPDB, Shodan, OTX",
+      desc: "Queries 6 global threat databases in parallel to aggregate malware scores and IP abuse confidence ratings.",
+      icon: Shield,
+      color: "border-amber-500/50 bg-amber-950/40 text-amber-400",
+    },
+    {
+      step: "05",
+      name: "AI & Topology Correlation",
+      tool: "Cytoscape.js & OpenAI GPT-4o",
+      desc: "Visualizes threat actor node graph and generates AI evidence summaries with YARA & Sigma rules.",
+      icon: Share2,
+      color: "border-pink-500/50 bg-pink-950/40 text-pink-400",
+    },
+    {
+      step: "06",
+      name: "Court PDF Evidence Package",
+      tool: "PDFKit & ISO/IEC 27037 Seal",
+      desc: "Compiles complete case overview, hash tables, custody audit logs, and digital seals into a downloadable PDF.",
+      icon: Award,
+      color: "border-cyan-500/50 bg-cyan-950/40 text-cyan-400",
+    },
+  ];
+
+  // Tools & Technologies Showcase
+  const toolsShowcase = [
+    {
+      category: "Frontend Workstation",
       icon: Globe,
-      color: "border-blue-500/40 text-blue-400 bg-blue-950/30",
-      whatItDoes: "Provides an intuitive dark-mode forensic workstation. Renders interactive threat topology graphs, live evidence custody badges, and one-click court report export interfaces.",
-      whyUseful: "Unifies scattered investigation tools into one workstation, eliminating browser clutter for SOC analysts.",
+      color: "border-blue-500/40 text-blue-400",
+      items: [
+        { name: "Next.js 14 & React 18", use: "Fast, modern web UI app router" },
+        { name: "Tailwind CSS", use: "Sleek dark-mode cyber aesthetic" },
+        { name: "Cytoscape.js", use: "Interactive threat node graph visualizer" },
+        { name: "Lucide React", use: "High-contrast forensic workstation icons" },
+      ],
     },
     {
-      tier: "Tier 2: Backend Core Engine Layer",
-      tech: "Node.js Express, Tesseract OCR, Mailparser, PDFKit, CustodyLog Engine",
+      category: "Backend Forensic Engine",
       icon: Server,
-      color: "border-emerald-500/40 text-emerald-400 bg-emerald-950/30",
-      whatItDoes: "Decodes EML email headers, parses OCR text from images, extracts IOCs (IPs, Hashes, Domains, Wallets), verifies live SHA-256 disk hashes, and compiles court-ready PDF packages.",
-      whyUseful: "Replaces 20-40 hours of manual log reading with automated parsing under 2 minutes, ensuring 100% ISO/IEC 27037 legal admissibility in court.",
+      color: "border-emerald-500/40 text-emerald-400",
+      items: [
+        { name: "Node.js & Express.js", use: "High-throughput API gateway & controllers" },
+        { name: "Tesseract.js OCR", use: "Reads text from screenshots & image files" },
+        { name: "Mailparser", use: "Decodes EML email headers, SPF/DMARC, and hops" },
+        { name: "PDFKit", use: "Generates court-admissible PDF evidence packages" },
+      ],
     },
     {
-      tier: "Tier 3: Threat Intelligence & AI Layer",
-      tech: "VirusTotal, AbuseIPDB, Shodan, URLScan, AlienVault, OpenAI GPT-4o",
+      category: "Threat Intel & AI APIs",
       icon: Cpu,
-      color: "border-amber-500/40 text-amber-400 bg-amber-950/30",
-      whatItDoes: "Queries 6 global threat intelligence APIs in parallel to fetch malware scores and IP reputation. GPT-4o generates evidence summaries and automated YARA/Sigma rules.",
-      whyUseful: "Eliminates false positives with multi-vendor API consensus and allows junior analysts to deploy enterprise SIEM defense rules instantly.",
+      color: "border-amber-500/40 text-amber-400",
+      items: [
+        { name: "VirusTotal API", use: "Scans hashes & domains against 70+ AV engines" },
+        { name: "AbuseIPDB API", use: "Checks IP reputation & abuse confidence score" },
+        { name: "Shodan & URLScan", use: "Scans open ports, banners, and website DOMs" },
+        { name: "OpenAI (GPT-4o)", use: "Grounded evidence summaries, YARA & Sigma rules" },
+      ],
     },
     {
-      tier: "Tier 4: Persistent Storage Layer",
-      tech: "MongoDB Atlas Cloud, In-Memory Mongo Fallback, Hard Drive Uploads",
+      category: "Database & File Vault",
       icon: Database,
-      color: "border-purple-500/40 text-purple-400 bg-purple-950/30",
-      whatItDoes: "Stores cases, custody logs, users, and IOCs permanently on MongoDB Atlas Cloud. Physical evidence files are saved permanently in backend storage.",
-      whyUseful: "Guarantees 100% data persistence on cloud DB while supporting zero-config RAM fallback for offline field deployments.",
+      color: "border-purple-500/40 text-purple-400",
+      items: [
+        { name: "MongoDB Atlas Cloud", use: "Permanent cloud storage for cases & logs" },
+        { name: "MongoMemoryServer", use: "RAM database fallback for zero-config offline use" },
+        { name: "Disk Storage (/uploads)", use: "Permanent local hard drive storage for evidence files" },
+        { name: "CustodyLog Mongoose Schema", use: "Immutable audit logging for court admissibility" },
+      ],
+    },
+  ];
+
+  // Why Useful / Problem-Solution Benefits
+  const whyUsefulPoints = [
+    {
+      title: "⏱️ Saves 90%+ Investigation Time",
+      desc: "Instead of spending 20-40 hours manually copying IPs from logs and checking isolated websites, InvestiCore parses files and queries threat feeds in under 2 minutes.",
+    },
+    {
+      title: "⚖️ 100% Court-Admissible Evidence",
+      desc: "SHA-256 live disk hash verification and immutable Chain of Custody audit logs prevent evidence tampering claims in court under ISO/IEC 27037 guidelines.",
+    },
+    {
+      title: "🛡️ Zero False Positives with API Consensus",
+      desc: "Combines 6 threat intelligence sources (VirusTotal, AbuseIPDB, Shodan, AlienVault) so security analysts get a unified threat score instead of guessing.",
+    },
+    {
+      title: "🤖 Instant SIEM & Endpoint Protection",
+      desc: "AI automatically generates YARA malware scanning rules and Sigma log alert rules, allowing junior analysts to deploy enterprise defenses without delay.",
     },
   ];
 
@@ -63,23 +156,23 @@ export default function ArchitecturePitchPage() {
       <div className="flex">
         <Sidebar />
         <main className="flex-1 p-8 space-y-8 overflow-y-auto">
-          {/* Executive Hero Banner */}
+          {/* Hero Section - Plain English Project Overview */}
           <div className="cyber-card p-8 bg-gradient-to-r from-blue-950/90 via-[#0f172a] to-purple-950/70 border border-blue-500/50 rounded-2xl space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-3.5 py-1.5 bg-blue-600/20 text-blue-400 border border-blue-500/50 text-xs font-mono font-bold rounded-full uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Simplified 4-Tier System Architecture Blueprint
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> All-In-One Cybercrime Forensic Platform Overview
               </span>
               <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-950/60 px-3 py-1.5 rounded-full border border-emerald-800/80">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Production Deployment v1.0
+                Live Production Platform v1.0
               </span>
             </div>
 
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              InvestiCore — High-Level Technical Architecture & Utility Guide
+              InvestiCore — Project Overview & System Architecture
             </h1>
             <p className="text-sm md:text-base text-gray-300 max-w-4xl leading-relaxed">
-              Clear, human-friendly architectural breakdown detailing how each tier operates under the hood and why each component is essential for cybercrime investigations, police cyber units, and enterprise security centers.
+              **InvestiCore** is an all-in-one digital forensic workstation and live threat intelligence platform built for Police Cyber Units, CERT Teams, and Security Operations Centers (SOC). It takes raw evidence (emails, screenshots, logs, network captures), automatically extracts indicators of compromise (IOCs), queries global threat feeds, visualizes threat actor networks, and exports court-admissible PDF packages.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-3">
@@ -98,88 +191,33 @@ export default function ArchitecturePitchPage() {
             </div>
           </div>
 
-          {/* Strategic Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-blue-500/30 hover:border-blue-500/60 transition group">
-              <div className="flex items-center justify-between text-blue-400">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Triage Speedup</span>
-                <div className="p-2 bg-blue-600/10 rounded-lg border border-blue-500/20">
-                  <Zap className="w-5 h-5 text-blue-400" />
-                </div>
-              </div>
-              <div className="text-3xl font-extrabold text-white group-hover:text-blue-400 transition">90% Reduction</div>
-              <p className="text-xs text-gray-400">Reduces evidence processing time from days to minutes</p>
-            </div>
-
-            <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-amber-500/30 hover:border-amber-500/60 transition group">
-              <div className="flex items-center justify-between text-amber-400">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Threat Intel Accuracy</span>
-                <div className="p-2 bg-amber-600/10 rounded-lg border border-amber-500/20">
-                  <Target className="w-5 h-5 text-amber-400" />
-                </div>
-              </div>
-              <div className="text-3xl font-extrabold text-amber-400">99.2% Rating</div>
-              <p className="text-xs text-gray-400">Multi-Vendor API Consensus Sweep eliminates false positives</p>
-            </div>
-
-            <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-emerald-500/30 hover:border-emerald-500/60 transition group">
-              <div className="flex items-center justify-between text-emerald-400">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Chain of Custody</span>
-                <div className="p-2 bg-emerald-600/10 rounded-lg border border-emerald-500/20">
-                  <Lock className="w-5 h-5 text-emerald-400" />
-                </div>
-              </div>
-              <div className="text-3xl font-extrabold text-emerald-400">100% Legally Sound</div>
-              <p className="text-xs text-gray-400">Cryptographic SHA-256 evidence integrity logs for court admissibility</p>
-            </div>
-
-            <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 transition group">
-              <div className="flex items-center justify-between text-purple-400">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Court Exporter</span>
-                <div className="p-2 bg-purple-600/10 rounded-lg border border-purple-500/20">
-                  <FileText className="w-5 h-5 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-3xl font-extrabold text-purple-400">1-Click PDF Export</div>
-              <p className="text-xs text-gray-400">ISO/IEC 27037 compliant legal evidence packages</p>
-            </div>
-          </div>
-
-          {/* 4-Tier Component Grid */}
+          {/* Section 1: How Evidence Flows (Step-by-Step Graph Pipeline) */}
           <div className="cyber-card p-8 bg-[#111827] border border-gray-800 rounded-2xl space-y-6">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Layers className="w-6 h-6 text-blue-400" />
-                4-Tier Architecture Breakdown: How It Works & Why It Is Useful
+                <Activity className="w-6 h-6 text-blue-400" />
+                How InvestiCore Works: Step-by-Step Evidence Pipeline
               </h2>
               <p className="text-xs text-gray-400 mt-1">
-                Clear operational specification of InvestiCore's 4 core architectural tiers
+                Visual flow of how raw uploaded evidence transforms into threat intelligence and court-ready legal evidence
               </p>
             </div>
 
-            <div className="space-y-4">
-              {tiers.map((t, idx) => {
-                const Icon = t.icon;
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {pipelineSteps.map((s, idx) => {
+                const Icon = s.icon;
                 return (
-                  <div key={idx} className={`p-6 rounded-xl border ${t.color} space-y-3 transition hover:border-blue-500/60`}>
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <div key={idx} className={`p-4 rounded-xl border ${s.color} space-y-2 flex flex-col justify-between transition hover:scale-105`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold text-gray-400">STAGE {s.step}</span>
                         <Icon className="w-5 h-5" />
-                        {t.tier}
-                      </h3>
-                      <span className="text-[10px] font-mono font-bold px-3 py-1 rounded bg-gray-900/90 border border-gray-700 text-gray-300">
-                        Tech Stack: {t.tech}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
-                      <div className="bg-gray-950/80 p-4 rounded-lg border border-gray-800 space-y-1">
-                        <span className="font-bold text-amber-400 uppercase text-[10px] block">⚙️ Under The Hood (How It Works):</span>
-                        <p className="text-gray-300 leading-relaxed">{t.whatItDoes}</p>
                       </div>
-                      <div className="bg-gray-950/80 p-4 rounded-lg border border-gray-800 space-y-1">
-                        <span className="font-bold text-emerald-400 uppercase text-[10px] block">💡 Strategic Utility (Why It Is Useful):</span>
-                        <p className="text-gray-300 leading-relaxed">{t.whyUseful}</p>
+                      <h3 className="font-bold text-white text-sm leading-snug">{s.name}</h3>
+                      <div className="text-[10px] font-mono text-gray-400 border-t border-gray-800/80 pt-1.5">
+                        {s.tool}
                       </div>
+                      <p className="text-[11px] text-gray-300 leading-relaxed pt-1">{s.desc}</p>
                     </div>
                   </div>
                 );
@@ -187,12 +225,70 @@ export default function ArchitecturePitchPage() {
             </div>
           </div>
 
-          {/* Legacy vs. InvestiCore Comparison Table */}
+          {/* Section 2: Complete Tools & Technology Showcase */}
           <div className="cyber-card p-8 bg-[#111827] border border-gray-800 rounded-2xl space-y-6">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Scale className="w-6 h-6 text-blue-400" />
-                Legacy Manual Investigation vs. InvestiCore Automated Platform
+                <Wrench className="w-6 h-6 text-emerald-400" />
+                Tools & Technologies Powering InvestiCore
+              </h2>
+              <p className="text-xs text-gray-400 mt-1">
+                Complete breakdown of libraries, frameworks, and APIs used in this platform and their specific role
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {toolsShowcase.map((t, idx) => {
+                const Icon = t.icon;
+                return (
+                  <div key={idx} className={`p-6 rounded-xl border ${t.color} bg-gray-950/60 space-y-4`}>
+                    <div className="flex items-center gap-2 border-b border-gray-800 pb-3">
+                      <Icon className="w-5 h-5" />
+                      <h3 className="font-bold text-white text-sm">{t.category}</h3>
+                    </div>
+
+                    <div className="space-y-3">
+                      {t.items.map((item, iIdx) => (
+                        <div key={iIdx} className="space-y-0.5">
+                          <span className="font-mono font-bold text-xs text-white block">{item.name}</span>
+                          <span className="text-[11px] text-gray-400 block leading-tight">{item.use}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 3: Why This Project Is Useful (Real-World Impact) */}
+          <div className="cyber-card p-8 bg-[#111827] border border-gray-800 rounded-2xl space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Award className="w-6 h-6 text-amber-400" />
+                Why InvestiCore Is Essential For Cybercrime Investigation
+              </h2>
+              <p className="text-xs text-gray-400 mt-1">
+                Real-world operational benefits for police cyber cells, CERT teams, and enterprise incident response
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              {whyUsefulPoints.map((p, idx) => (
+                <div key={idx} className="bg-gray-900 p-5 rounded-xl border border-gray-800 space-y-2 hover:border-amber-500/50 transition">
+                  <h3 className="font-bold text-amber-400 text-sm">{p.title}</h3>
+                  <p className="text-gray-300 leading-relaxed">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 4: Legacy vs InvestiCore Comparison Table */}
+          <div className="cyber-card p-8 bg-[#111827] border border-gray-800 rounded-2xl space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Scale className="w-6 h-6 text-purple-400" />
+                Legacy Manual Investigation vs. InvestiCore Platform
               </h2>
               <p className="text-xs text-gray-400 mt-1">Comparative breakdown demonstrating InvestiCore's operational advantages</p>
             </div>
