@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
   const [googleName, setGoogleName] = useState("");
+  const [googleOrg, setGoogleOrg] = useState("");
   const [googleRole, setGoogleRole] = useState("investigator");
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -56,6 +57,7 @@ export default function LoginPage() {
       const res = await api.post("/auth/google", {
         email: googleEmail,
         name: googleName || googleEmail.split("@")[0],
+        organization: googleOrg || "Cyber Crime Unit",
         role: googleRole,
       });
 
@@ -209,7 +211,7 @@ export default function LoginPage() {
                 </svg>
               </div>
               <h2 className="text-xl font-bold text-white">Sign in with Google</h2>
-              <p className="text-xs text-gray-400">Choose your Google Account & Position Role</p>
+              <p className="text-xs text-gray-400">Choose your Google Account & Organization</p>
             </div>
 
             <form onSubmit={handleGoogleSubmit} className="space-y-4">
@@ -236,6 +238,19 @@ export default function LoginPage() {
                   value={googleName}
                   onChange={(e) => setGoogleName(e.target.value)}
                   placeholder="Det. Alex Rivera"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  Department / Agency Organization
+                </label>
+                <input
+                  type="text"
+                  value={googleOrg}
+                  onChange={(e) => setGoogleOrg(e.target.value)}
+                  placeholder="Cyber Crime Branch / CERT-In / DFIR Unit"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-none"
                 />
               </div>

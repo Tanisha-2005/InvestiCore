@@ -199,7 +199,7 @@ exports.googleAuth = async (req, res) => {
 
       const userOrg = organization && organization.trim() !== ""
         ? organization.trim()
-        : (userEmail.includes("@") ? userEmail.split("@")[1].split(".")[0].toUpperCase() + " Agency" : "Google Authenticated Unit");
+        : "Cyber Crime Unit";
 
       user = await User.create({
         name: name || userEmail.split("@")[0],

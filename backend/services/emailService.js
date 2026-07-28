@@ -1,29 +1,18 @@
 const nodemailer = require("nodemailer");
 
-// Create Transporter (Optimized for Gmail SMTP & cloud hosting environments like Render)
+// Create Transporter (Explicit SSL Port 465 for Gmail & Cloud environments like Render)
 const getTransporter = () => {
   const smtpUser = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
   const smtpPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : null;
 
   if (smtpUser && smtpPass) {
-    // Gmail Transport Optimization
-    if (process.env.SMTP_HOST === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail" || smtpUser.endsWith("@gmail.com")) {
-      return nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-    }
-    // Generic SMTP Transport
+    const host = process.env.SMTP_HOST || "smtp.gmail.com";
+    const isGmail = host === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail" || (smtpUser && smtpUser.endsWith("@gmail.com"));
+    
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true",
+      host: host,
+      port: isGmail ? 465 : (Number(process.env.SMTP_PORT) || 465),
+      secure: isGmail ? true : (process.env.SMTP_SECURE === "true" || Number(process.env.SMTP_PORT) === 465),
       auth: {
         user: smtpUser,
         pass: smtpPass,
@@ -31,6 +20,9 @@ const getTransporter = () => {
       tls: {
         rejectUnauthorized: false,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
   }
   return null;
