@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import { Briefcase, ShieldAlert, AlertTriangle, Activity, ArrowUpRight, ShieldCheck, Users, Lock, CheckCircle2 } from "lucide-react";
+import { Briefcase, ShieldAlert, AlertTriangle, Activity, ArrowUpRight, ShieldCheck, Users, Lock, CheckCircle2, Trash2 } from "lucide-react";
 import { api } from "@/lib/api";
 import Link from "next/link";
 
@@ -44,6 +44,19 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error("Failed to fetch admin personnel audit:", err);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, name: string, email: string) => {
+    if (!confirm(`Are you sure you want to permanently delete user account "${name}" (${email})?`)) {
+      return;
+    }
+    try {
+      const res = await api.delete(`/auth/users/${userId}`);
+      alert(res.data?.message || "Personnel account deleted successfully.");
+      fetchPersonnelAudit();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to delete user account.");
     }
   };
 
@@ -121,7 +134,7 @@ export default function DashboardPage() {
                   <Lock className="w-5 h-5 text-amber-400" />
                   <div>
                     <h2 className="text-lg font-bold text-white">System Administrator Personnel Audit Matrix</h2>
-                    <p className="text-xs text-gray-400">View registered users, positions, registration dates, and security clearance roles</p>
+                    <p className="text-xs text-gray-400">Manage registered personnel accounts, security clearance roles, and account revocations</p>
                   </div>
                 </div>
                 <span className="text-xs font-mono bg-amber-950 px-3 py-1 rounded text-amber-300 border border-amber-800">
@@ -139,6 +152,7 @@ export default function DashboardPage() {
                       <th className="py-3 px-4">Organization</th>
                       <th className="py-3 px-4">Registered Date</th>
                       <th className="py-3 px-4">Clearance Status</th>
+                      <th className="py-3 px-4">Admin Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -170,6 +184,18 @@ export default function DashboardPage() {
                           <span className="inline-flex items-center gap-1 text-xs text-emerald-400 font-medium bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
                             <CheckCircle2 className="w-3 h-3" /> Active Clearance
                           </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          {u.role !== "admin" ? (
+                            <button
+                              onClick={() => handleDeleteUser(u.id, u.name, u.email)}
+                              className="text-xs bg-red-950/80 hover:bg-red-900 text-red-400 hover:text-red-200 border border-red-800/80 px-2.5 py-1 rounded font-semibold transition flex items-center gap-1 shadow-sm"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Delete Account
+                            </button>
+                          ) : (
+                            <span className="text-[11px] text-amber-500 font-mono italic">Primary Admin</span>
+                          )}
                         </td>
                       </tr>
                     ))}

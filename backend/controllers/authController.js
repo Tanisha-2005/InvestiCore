@@ -298,3 +298,25 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch users", detail: err.message });
   }
 };
+
+// Admin Only: Delete personnel account permanently
+exports.deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const userToDelete = await User.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ message: "User account not found" });
+    }
+    if (userToDelete.role === "admin") {
+      return res.status(403).json({ message: "Primary System Administrator account cannot be deleted." });
+    }
+    await User.findByIdAndDelete(userId);
+    res.json({
+      success: true,
+      message: `Personnel account (${userToDelete.name} / ${userToDelete.email}) permanently removed.`,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete user account", detail: err.message });
+  }
+};
+
