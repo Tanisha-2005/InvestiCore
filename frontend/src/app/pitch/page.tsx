@@ -10,73 +10,50 @@ import {
   Award,
   Layers,
   Target,
-  Clock,
-  FileCheck,
-  CheckCircle2,
   ArrowRight,
-  Database,
-  Share2,
-  Globe,
-  Sparkles,
   Server,
   Lock,
-  FileText,
   Scale,
-  Search,
-  Key,
+  Sparkles,
+  Database,
+  Globe,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function ArchitecturePitchPage() {
-  const subsystemBreakdown = [
+  const tiers = [
     {
-      title: "1. Evidence Vault & Multiformat Ingestion Engine",
-      tech: "Tesseract OCR, Mailparser, PCAP Streams, Multer",
-      whatItDoes: "Parses raw images via OCR, decodes EML email headers, decodes PCAP network streams, and extracts IPv4/v6, Domains, URLs, Hashes, and Crypto Wallets via Regex.",
-      whyUseful: "Eliminates 20-40 hours of manual log sifting per incident. Converts unstructured raw evidence files into structured forensic indicators in seconds.",
+      tier: "Tier 1: Frontend Workstation Layer",
+      tech: "Next.js 14, React 18, TypeScript, Tailwind CSS, Cytoscape.js",
+      icon: Globe,
       color: "border-blue-500/40 text-blue-400 bg-blue-950/30",
+      whatItDoes: "Provides an intuitive dark-mode forensic workstation. Renders interactive threat topology graphs, live evidence custody badges, and one-click court report export interfaces.",
+      whyUseful: "Unifies scattered investigation tools into one workstation, eliminating browser clutter for SOC analysts.",
     },
     {
-      title: "2. Legal Chain of Custody & Disk Integrity Verification",
-      tech: "Crypto SHA-256/MD5 Engine, CustodyLog Schema",
-      whatItDoes: "Computes SHA-256 baseline hashes on upload. Writes immutable audit logs for every view/verification action with officer ID, IP, and timestamp. Re-computes live file hashes on disk to detect physical file tampering.",
-      whyUseful: "Guarantees ISO/IEC 27037 legal compliance. Prevents evidence tampering claims in court and ensures 100% legal admissibility for prosecutors.",
+      tier: "Tier 2: Backend Core Engine Layer",
+      tech: "Node.js Express, Tesseract OCR, Mailparser, PDFKit, CustodyLog Engine",
+      icon: Server,
       color: "border-emerald-500/40 text-emerald-400 bg-emerald-950/30",
+      whatItDoes: "Decodes EML email headers, parses OCR text from images, extracts IOCs (IPs, Hashes, Domains, Wallets), verifies live SHA-256 disk hashes, and compiles court-ready PDF packages.",
+      whyUseful: "Replaces 20-40 hours of manual log reading with automated parsing under 2 minutes, ensuring 100% ISO/IEC 27037 legal admissibility in court.",
     },
     {
-      title: "3. Live Multi-Vendor Threat Intelligence Consensus",
-      tech: "VirusTotal, AbuseIPDB, Shodan, URLScan, AlienVault OTX",
-      whatItDoes: "Executes parallel REST API queries across 6 global threat intelligence feeds to aggregate malware scores, IP abuse confidence rates, open ports, and DOM screenshot benchmarks.",
-      whyUseful: "Eliminates browser context switching across 10+ tabs. Multi-vendor consensus score eliminates false positives for SOC analysts.",
+      tier: "Tier 3: Threat Intelligence & AI Layer",
+      tech: "VirusTotal, AbuseIPDB, Shodan, URLScan, AlienVault, OpenAI GPT-4o",
+      icon: Cpu,
       color: "border-amber-500/40 text-amber-400 bg-amber-950/30",
+      whatItDoes: "Queries 6 global threat intelligence APIs in parallel to fetch malware scores and IP reputation. GPT-4o generates evidence summaries and automated YARA/Sigma rules.",
+      whyUseful: "Eliminates false positives with multi-vendor API consensus and allows junior analysts to deploy enterprise SIEM defense rules instantly.",
     },
     {
-      title: "4. Interactive Indicator Topology Graph",
-      tech: "Cytoscape.js, Network Topology Renderer",
-      whatItDoes: "Renders interactive visual graph nodes connecting Suspects, Compromised Endpoints, C2 IP Addresses, Domains, Payload Hashes, and Extortion Wallets across active cases.",
-      whyUseful: "Uncovers hidden threat actor infrastructure connections (e.g. discovering that two separate phishing cases share the same C2 server IP).",
+      tier: "Tier 4: Persistent Storage Layer",
+      tech: "MongoDB Atlas Cloud, In-Memory Mongo Fallback, Hard Drive Uploads",
+      icon: Database,
       color: "border-purple-500/40 text-purple-400 bg-purple-950/30",
-    },
-    {
-      title: "5. AI Forensics & YARA/Sigma Rule Engine",
-      tech: "OpenAI GPT-4o, YARA Engine, Sigma Rule Generator",
-      whatItDoes: "Generates fact-grounded evidence summaries, custom deployable YARA malware detection rules for endpoints, and SIEM alert rules for Splunk/Elastic.",
-      whyUseful: "Accelerates incident response containment. Allows junior SOC analysts to generate enterprise defense rules without waiting for senior reverse engineers.",
-      color: "border-pink-500/40 text-pink-400 bg-pink-950/30",
-    },
-    {
-      title: "6. One-Click Court-Ready PDF Evidence Exporter",
-      tech: "PDFKit, ISO/IEC 27037 Legal Compliance Seal",
-      whatItDoes: "Compiles complete case overview, SHA-256 evidence hash tables, Chain of Custody audit logs, threat scores, and digital investigator signature blocks into an audit-ready PDF.",
-      whyUseful: "One-click generation of branded, court-admissible evidence packages for law enforcement officers, judges, and C-suite executives.",
-      color: "border-cyan-500/40 text-cyan-400 bg-cyan-950/30",
-    },
-    {
-      title: "7. Zero-Config Persistence & Fail-Safe Database",
-      tech: "Mongoose, MongoDB, MongoMemoryServer RAM Fallback",
-      whatItDoes: "Connects to persistent MongoDB. If local Mongo is unavailable, automatically instantiates an in-memory MongoDB database in RAM.",
-      whyUseful: "Zero-config operation on air-gapped forensic laptops or emergency field deployments without requiring database setup.",
-      color: "border-indigo-500/40 text-indigo-400 bg-indigo-950/30",
+      whatItDoes: "Stores cases, custody logs, users, and IOCs permanently on MongoDB Atlas Cloud. Physical evidence files are saved permanently in backend storage.",
+      whyUseful: "Guarantees 100% data persistence on cloud DB while supporting zero-config RAM fallback for offline field deployments.",
     },
   ];
 
@@ -90,7 +67,7 @@ export default function ArchitecturePitchPage() {
           <div className="cyber-card p-8 bg-gradient-to-r from-blue-950/90 via-[#0f172a] to-purple-950/70 border border-blue-500/50 rounded-2xl space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-3.5 py-1.5 bg-blue-600/20 text-blue-400 border border-blue-500/50 text-xs font-mono font-bold rounded-full uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Enterprise Solution Blueprint & Architecture
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Simplified 4-Tier System Architecture Blueprint
               </span>
               <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-950/60 px-3 py-1.5 rounded-full border border-emerald-800/80">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -99,10 +76,10 @@ export default function ArchitecturePitchPage() {
             </div>
 
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              InvestiCore — System Architecture & Component Utility Blueprint
+              InvestiCore — High-Level Technical Architecture & Utility Guide
             </h1>
             <p className="text-sm md:text-base text-gray-300 max-w-4xl leading-relaxed">
-              Complete technical architectural breakdown detailing every module, how each subsystem functions under the hood, and why each component is essential for modern cybercrime investigations, CERT teams, and enterprise SOCs.
+              Clear, human-friendly architectural breakdown detailing how each tier operates under the hood and why each component is essential for cybercrime investigations, police cyber units, and enterprise security centers.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-3">
@@ -121,7 +98,7 @@ export default function ArchitecturePitchPage() {
             </div>
           </div>
 
-          {/* Strategic Impact Metrics Grid */}
+          {/* Strategic Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-blue-500/30 hover:border-blue-500/60 transition group">
               <div className="flex items-center justify-between text-blue-400">
@@ -158,47 +135,55 @@ export default function ArchitecturePitchPage() {
 
             <div className="cyber-card p-6 space-y-3 bg-[#111827] border border-purple-500/30 hover:border-purple-500/60 transition group">
               <div className="flex items-center justify-between text-purple-400">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">AI Grounding</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Court Exporter</span>
                 <div className="p-2 bg-purple-600/10 rounded-lg border border-purple-500/20">
-                  <Cpu className="w-5 h-5 text-purple-400" />
+                  <FileText className="w-5 h-5 text-purple-400" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-purple-400">Zero Hallucination</div>
-              <p className="text-xs text-gray-400">Fact-grounded GPT-4o summaries scoped to verified case artifacts</p>
+              <div className="text-3xl font-extrabold text-purple-400">1-Click PDF Export</div>
+              <p className="text-xs text-gray-400">ISO/IEC 27037 compliant legal evidence packages</p>
             </div>
           </div>
 
-          {/* Component-by-Component Deep Dive Section */}
+          {/* 4-Tier Component Grid */}
           <div className="cyber-card p-8 bg-[#111827] border border-gray-800 rounded-2xl space-y-6">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Server className="w-6 h-6 text-blue-400" />
-                System Component Deep-Dive: How Each Module Works & Why It Is Useful
+                <Layers className="w-6 h-6 text-blue-400" />
+                4-Tier Architecture Breakdown: How It Works & Why It Is Useful
               </h2>
-              <p className="text-xs text-gray-400 mt-1">Detailed operational specification of InvestiCore's 7 primary forensic subsystems</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Clear operational specification of InvestiCore's 4 core architectural tiers
+              </p>
             </div>
 
             <div className="space-y-4">
-              {subsystemBreakdown.map((item, idx) => (
-                <div key={idx} className={`p-5 rounded-xl border ${item.color} space-y-2 transition hover:border-blue-500/60`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-white">{item.title}</h3>
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded bg-gray-900/80 border border-gray-700 text-gray-300">
-                      Tech: {item.tech}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1 text-xs">
-                    <div className="bg-gray-950/70 p-3.5 rounded-lg border border-gray-800 space-y-1">
-                      <span className="font-bold text-amber-400 uppercase text-[10px] block">⚙️ Under The Hood (How It Works):</span>
-                      <p className="text-gray-300 leading-relaxed">{item.whatItDoes}</p>
+              {tiers.map((t, idx) => {
+                const Icon = t.icon;
+                return (
+                  <div key={idx} className={`p-6 rounded-xl border ${t.color} space-y-3 transition hover:border-blue-500/60`}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Icon className="w-5 h-5" />
+                        {t.tier}
+                      </h3>
+                      <span className="text-[10px] font-mono font-bold px-3 py-1 rounded bg-gray-900/90 border border-gray-700 text-gray-300">
+                        Tech Stack: {t.tech}
+                      </span>
                     </div>
-                    <div className="bg-gray-950/70 p-3.5 rounded-lg border border-gray-800 space-y-1">
-                      <span className="font-bold text-emerald-400 uppercase text-[10px] block">💡 Strategic Utility (Why It Is Useful):</span>
-                      <p className="text-gray-300 leading-relaxed">{item.whyUseful}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
+                      <div className="bg-gray-950/80 p-4 rounded-lg border border-gray-800 space-y-1">
+                        <span className="font-bold text-amber-400 uppercase text-[10px] block">⚙️ Under The Hood (How It Works):</span>
+                        <p className="text-gray-300 leading-relaxed">{t.whatItDoes}</p>
+                      </div>
+                      <div className="bg-gray-950/80 p-4 rounded-lg border border-gray-800 space-y-1">
+                        <span className="font-bold text-emerald-400 uppercase text-[10px] block">💡 Strategic Utility (Why It Is Useful):</span>
+                        <p className="text-gray-300 leading-relaxed">{t.whyUseful}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

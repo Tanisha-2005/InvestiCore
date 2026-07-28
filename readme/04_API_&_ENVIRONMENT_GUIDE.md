@@ -26,7 +26,7 @@ JWT_SECRET=investicore_secure_jwt_secret_token_2026_x89a
 JWT_EXPIRES_IN=7d
 
 # OpenAI Integration
-OPENAI_API_KEY=sk-proj-...        # Your OpenAI API key
+OPENAI_API_KEY=your_openai_api_key_here # Your OpenAI API key
 OPENAI_MODEL=gpt-4o-mini          # Model version
 
 # Threat Intelligence Live APIs
