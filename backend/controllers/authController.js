@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { sendOTPVerificationEmail } = require("../services/emailService");
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
@@ -35,11 +34,6 @@ exports.seedAdminUser = async () => {
   }
 };
 
-// Generate 6-Digit Random Numeric OTP
-const generate6DigitOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
 exports.register = async (req, res) => {
   try {
     const { name, full_name, email, password, organization, role } = req.body;
@@ -67,10 +61,6 @@ exports.register = async (req, res) => {
       assignedRole = "investigator";
     }
 
-    const otp = generate6DigitOTP();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    // Smart Organization Fallback
     const userOrg = organization && organization.trim() !== ""
       ? organization.trim()
       : (email.includes("@") ? email.split("@")[1].split(".")[0].toUpperCase() + " Cyber Division" : "Cyber Crime Unit");
@@ -81,107 +71,20 @@ exports.register = async (req, res) => {
       password,
       organization: userOrg,
       role: assignedRole,
-      isEmailVerified: false,
-      otp,
-      otpExpires,
+      isEmailVerified: true,
     });
-
-    // Send OTP Verification Email to user's real email inbox (Non-blocking background delivery for instant response)
-    sendOTPVerificationEmail(user.email, user.name, otp).catch((err) =>
-      console.error(`[Background OTP Error] ${err.message}`)
-    );
-
-    res.status(201).json({
-      require_otp: true,
-      email: user.email,
-      message: `Account created! Verification OTP sent to your email inbox: ${user.email}`,
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Registration failed", detail: err.message, error: err.message });
-  }
-};
-
-// Verify 6-Digit OTP Endpoint (Supports Real Inbox OTP & Master Backup Code 123456)
-exports.verifyOTP = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    if (!email || !otp) {
-      return res.status(400).json({ message: "Email and OTP code are required" });
-    }
-
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      return res.status(404).json({ message: "User account not found" });
-    }
-
-    if (user.isEmailVerified) {
-      const token = signToken(user._id);
-      return res.json({
-        token,
-        access_token: token,
-        refresh_token: token,
-        user: user.toSafeObject(),
-        message: "Email already verified. Logging in...",
-      });
-    }
-
-    const submittedOtp = otp.toString().trim();
-    if (!user.otp || (user.otp !== submittedOtp && submittedOtp !== "123456")) {
-      return res.status(400).json({ message: "Invalid OTP code. Please check your email inbox and try again." });
-    }
-
-    if (user.otpExpires && new Date() > new Date(user.otpExpires) && submittedOtp !== "123456") {
-      return res.status(400).json({ message: "OTP code has expired. Please request a new OTP." });
-    }
-
-    // Mark Email as Verified & Clear OTP
-    user.isEmailVerified = true;
-    user.otp = null;
-    user.otpExpires = null;
-    await user.save();
 
     const token = signToken(user._id);
-    res.json({
+
+    res.status(201).json({
       token,
       access_token: token,
       refresh_token: token,
       user: user.toSafeObject(),
-      message: "Email verified successfully! Registration complete.",
+      message: "Account created successfully!",
     });
   } catch (err) {
-    res.status(500).json({ message: "OTP verification failed", detail: err.message });
-  }
-};
-
-// Resend OTP Endpoint
-exports.resendOTP = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      return res.status(404).json({ message: "User account not found" });
-    }
-
-    const newOtp = generate6DigitOTP();
-    user.otp = newOtp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    await user.save();
-
-    sendOTPVerificationEmail(user.email, user.name, newOtp).catch((err) =>
-      console.error(`[Background OTP Error] ${err.message}`)
-    );
-
-    res.json({
-      success: true,
-      email: user.email,
-      message: `New OTP code sent to your email inbox: ${user.email}`,
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to resend OTP", detail: err.message });
+    res.status(500).json({ message: "Registration failed", detail: err.message, error: err.message });
   }
 };
 
@@ -258,24 +161,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check if Email Verification is required
-    if (!user.isEmailVerified && user.role !== "admin") {
-      const newOtp = generate6DigitOTP();
-      user.otp = newOtp;
-      user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-      await user.save();
 
-      sendOTPVerificationEmail(user.email, user.name, newOtp).catch((err) =>
-        console.error(`[Background OTP Error] ${err.message}`)
-      );
-
-      return res.status(403).json({
-        require_otp: true,
-        email: user.email,
-        message: "Email verification required. An OTP has been sent to your email inbox.",
-        detail: "Email verification required. An OTP has been sent to your email inbox.",
-      });
-    }
 
     const token = signToken(user._id);
     res.json({

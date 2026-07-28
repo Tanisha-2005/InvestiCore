@@ -38,11 +38,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (err: any) {
-      if (err.response?.data?.require_otp) {
-        router.push(`/register?verify_email=${encodeURIComponent(email)}`);
-      } else {
-        setError(err.response?.data?.detail || err.response?.data?.message || "Invalid credentials.");
-      }
+      setError(err.response?.data?.detail || err.response?.data?.message || "Invalid credentials.");
     } finally {
       setLoading(false);
     }

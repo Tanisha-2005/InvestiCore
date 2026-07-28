@@ -9,9 +9,7 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["investigator", "analyst", "admin"], default: "investigator" },
     organization: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
-    isEmailVerified: { type: Boolean, default: false },
-    otp: { type: String, default: null },
-    otpExpires: { type: Date, default: null },
+    isEmailVerified: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

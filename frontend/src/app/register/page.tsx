@@ -17,9 +17,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // OTP Verification State
-  const [step, setStep] = useState<"register" | "otp">("register");
-  const [otpCode, setOtpCode] = useState("");
+
 
   // Google Modal State
   const [showGoogleModal, setShowGoogleModal] = useState(false);
@@ -43,9 +41,10 @@ export default function RegisterPage() {
         role,
       });
 
-      if (res.data?.require_otp) {
-        setStep("otp");
-        setMessage(res.data.message || `An OTP verification code was sent to ${email}`);
+      if (res.data?.access_token) {
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refresh_token);
+        router.push("/dashboard");
       } else {
         router.push("/login");
       }
@@ -82,46 +81,7 @@ export default function RegisterPage() {
     }
   };
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
 
-    try {
-      const res = await api.post("/auth/verify-otp", {
-        email,
-        otp: otpCode,
-      });
-
-      if (res.data?.access_token) {
-        localStorage.setItem("access_token", res.data.access_token);
-        localStorage.setItem("refresh_token", res.data.refresh_token);
-        router.push("/dashboard");
-      } else {
-        router.push("/login");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.response?.data?.message || "OTP verification failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    setError("");
-    setMessage("");
-    setLoading(true);
-
-    try {
-      const res = await api.post("/auth/resend-otp", { email });
-      setMessage(res.data?.message || "New OTP code sent to your email!");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to resend OTP.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0b0f17] p-4 lg:p-8 relative">
@@ -178,7 +138,7 @@ export default function RegisterPage() {
 
           <div className="pt-4 border-t border-gray-800 text-[11px] text-gray-500 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            2-Step Real Email OTP Verification Enforced
+            Fast & Secure Account Creation
           </div>
         </div>
 
@@ -189,12 +149,10 @@ export default function RegisterPage() {
               <Shield className="w-8 h-8 text-blue-500" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">
-              {step === "register" ? "Create Personnel Account" : "Verify Email OTP"}
+              Create Personnel Account
             </h1>
             <p className="text-sm text-gray-400">
-              {step === "register"
-                ? "Join the Cybercrime Threat Platform"
-                : `Enter the 6-digit code sent to ${email}`}
+              Join the Cybercrime Threat Platform
             </p>
           </div>
 
@@ -211,7 +169,6 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {step === "register" ? (
             <div className="space-y-4">
               {/* Quick Google Sign-Up Button */}
               <button
@@ -327,9 +284,6 @@ export default function RegisterPage() {
                     <option value="investigator">Lead Investigator (Case Ownership & Evidence Custody)</option>
                     <option value="analyst">Forensic Analyst (Threat Intel Sweep & IOC Graphs)</option>
                   </select>
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    *Note: Email verification via 6-digit OTP is required upon registration.
-                  </p>
                 </div>
 
                 <button
@@ -337,61 +291,12 @@ export default function RegisterPage() {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {loading ? "Sending OTP to Inbox..." : "Create Account & Send OTP"}
+                  {loading ? "Creating Account..." : "Create Account"}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
             </div>
-          ) : (
-            <form onSubmit={handleVerifyOTP} className="space-y-5">
-              <div>
-                <label className="block text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1 text-center">
-                  Enter 6-Digit Email Verification Code
-                </label>
-                <div className="relative">
-                  <Key className="absolute left-3 top-3 w-5 h-5 text-amber-400" />
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value)}
-                    placeholder="123456"
-                    className="w-full bg-gray-900 border border-amber-500/60 rounded-lg text-center font-mono text-xl tracking-widest py-3 text-white focus:border-amber-400 focus:outline-none"
-                  />
-                </div>
-                <p className="text-[11px] text-gray-400 text-center mt-2">
-                  Check your email inbox ({email}) for your 6-digit verification code.
-                </p>
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-emerald-600/20 disabled:opacity-50"
-              >
-                {loading ? "Verifying OTP..." : "Verify OTP & Complete Registration"}
-              </button>
-
-              <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-800">
-                <button
-                  type="button"
-                  onClick={handleResendOTP}
-                  disabled={loading}
-                  className="text-amber-400 hover:underline flex items-center gap-1"
-                >
-                  <RefreshCw className="w-3 h-3" /> Resend OTP
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep("register")}
-                  className="text-gray-400 hover:underline"
-                >
-                  Change Email
-                </button>
-              </div>
-            </form>
-          )}
 
           <div className="text-center text-xs text-gray-400">
             Already registered?{" "}
