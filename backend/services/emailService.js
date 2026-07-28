@@ -1,28 +1,17 @@
 const nodemailer = require("nodemailer");
 
-// Create Transporter (Explicit SSL Port 465 for Gmail & Cloud environments like Render)
+// Create Transporter (Optimized service: "gmail" for 100% instant email delivery)
 const getTransporter = () => {
   const smtpUser = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
   const smtpPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : null;
 
   if (smtpUser && smtpPass) {
-    const host = process.env.SMTP_HOST || "smtp.gmail.com";
-    const isGmail = host === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail" || (smtpUser && smtpUser.endsWith("@gmail.com"));
-    
     return nodemailer.createTransport({
-      host: host,
-      port: isGmail ? 465 : (Number(process.env.SMTP_PORT) || 465),
-      secure: isGmail ? true : (process.env.SMTP_SECURE === "true" || Number(process.env.SMTP_PORT) === 465),
+      service: "gmail",
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
-      tls: {
-        rejectUnauthorized: false,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
     });
   }
   return null;
@@ -61,8 +50,8 @@ exports.sendOTPVerificationEmail = async (toEmail, name, otp) => {
     };
 
     if (transporter) {
-      await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Real OTP Email successfully delivered to inbox: ${toEmail}`);
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`[Email Service] Real OTP Email successfully delivered to inbox: ${toEmail} (ID: ${info.messageId})`);
     } else {
       console.log(`=======================================================`);
       console.log(`[OTP Verification Email] Target Inbox: ${toEmail}`);
