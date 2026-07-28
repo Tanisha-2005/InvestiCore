@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 const path = require("path");
 
 const connectDB = require("./config/db");
+const { seedAdminUser } = require("./controllers/authController");
 
 const authRoutes = require("./routes/authRoutes");
 const caseRoutes = require("./routes/caseRoutes");
@@ -17,7 +18,10 @@ const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 
-connectDB();
+// Connect DB & Seed Dedicated Admin Account
+connectDB().then(() => {
+  seedAdminUser();
+});
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: process.env.CLIENT_URL || "*", credentials: true }));

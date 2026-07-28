@@ -6,9 +6,12 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 8 },
-    role: { type: String, enum: ["investigator", "admin"], default: "investigator" },
+    role: { type: String, enum: ["investigator", "analyst", "admin"], default: "investigator" },
     organization: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
+    otp: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
   },
   { timestamps: true }
 );
@@ -25,8 +28,8 @@ userSchema.methods.comparePassword = function (candidate) {
 };
 
 userSchema.methods.toSafeObject = function () {
-  const { _id, name, email, role, organization, createdAt } = this;
-  return { id: _id, name, email, role, organization, createdAt };
+  const { _id, name, email, role, organization, isEmailVerified, createdAt } = this;
+  return { id: _id, name, email, role, organization, isEmailVerified, createdAt };
 };
 
 module.exports = mongoose.model("User", userSchema);
