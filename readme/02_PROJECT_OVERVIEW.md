@@ -8,6 +8,39 @@ Imagine you are a cybersecurity investigator dealing with a ransomware outbreak 
 
 ---
 
+## 👥 Role-Based Access Control (RBAC) & 3 Platform Roles
+
+InvestiCore enforces a 3-tier Role-Based Access Control (RBAC) architecture tailored for digital forensics, incident response, and security governance:
+
+### 1. 🕵️ Lead Investigator (`investigator`)
+- **Access Level**: Public Self-Registration (Requires 2-Step Real Email OTP Verification)
+- **Key Responsibilities**: Case ownership, evidence gathering, and end-to-end cybercrime investigation.
+- **Capabilities**:
+  - Create and manage active cybercrime cases, MITRE ATT&CK tags, and investigation timelines.
+  - Upload evidence files to the Evidence Vault and maintain legal Chain of Custody logs.
+  - Run live threat intelligence sweeps across VirusTotal, AbuseIPDB, Shodan, and AlienVault OTX.
+  - Query the AI Forensics Assistant (GPT-4o) for evidence Q&A and YARA/Sigma rule generation.
+  - Export court-admissible PDF and DOCX investigation report archives.
+
+### 2. 🔍 Forensic Analyst (`analyst`)
+- **Access Level**: Public Self-Registration (Requires 2-Step Real Email OTP Verification)
+- **Key Responsibilities**: Technical threat intelligence analysis, malware artifact parsing, and IOC correlation.
+- **Capabilities**:
+  - Execute multi-source threat sweeps on suspicious IP addresses, domain names, file hashes, and URLs.
+  - Analyze IOC correlation network graphs and attack timeline event sequences.
+  - Generate YARA and Sigma detection signatures for SOC and SIEM integration.
+  - Collaborate with Lead Investigators on technical evidence verification.
+
+### 3. ⚙️ System Administrator (`admin`)
+- **Access Level**: Restricted / Pre-Seeded Command Account Only (Public Registration Strictly Disabled)
+- **Key Responsibilities**: Platform security governance, system health monitoring, and personnel audit oversight.
+- **Capabilities**:
+  - Exclusive access to the **System Administrator Personnel Audit Matrix**.
+  - Audit all registered personnel, assigned positions/roles, verified email addresses, registration dates, and security clearance statuses.
+  - System-wide security oversight and command portal administration.
+
+---
+
 ## 🎯 Who is InvestiCore Built For?
 
 - **SOC (Security Operations Center) Analysts**: Quickly triage suspicious emails, IPs, file hashes, and domains.
@@ -39,8 +72,7 @@ Imagine you are a cybersecurity investigator dealing with a ransomware outbreak 
 - **Live Disk Integrity Verification**: Re-computes live SHA-256/SHA-1/MD5 file hashes directly from storage disk in real-time to detect any physical file tampering.
 - **Official Certificate Export**: Generates court-admissible Certificates of Evidence Authenticity & Custody for legal proceedings.
 
-
-### 3. 🔍 Live Threat Intelligence Sweep
+### 4. 🔍 Live Threat Intelligence Sweep
 Instead of manually opening 10 tabs to check suspicious IPs or hashes, InvestiCore queries live threat intelligence feeds in parallel:
 - **VirusTotal**: Scans file hashes and URLs against 70+ antivirus engines.
 - **AbuseIPDB**: Checks IP reputation and recent abuse reports.
@@ -48,17 +80,17 @@ Instead of manually opening 10 tabs to check suspicious IPs or hashes, InvestiCo
 - **Shodan**: Scans open ports, banners, and vulnerable services on target IPs.
 - **AlienVault OTX**: Queries global threat pulses and community indicators.
 
-### 4. 🤖 AI Forensics Assistant (GPT-4o Powered)
+### 5. 🤖 AI Forensics Assistant (GPT-4o Powered)
 - **Evidence Chat**: Ask natural language questions about your uploaded evidence (e.g., *"What IP address did the malware attempt to connect to in the suspicious email?"*).
 - **YARA Rule Generator**: Generate custom YARA detection rules to scan your enterprise endpoints.
 - **Sigma Rule Generator**: Automatically convert detected threat behavior into SIEM alert rules.
 
-### 5. 🕸️ Visual Relationship Graph
+### 6. 🕸️ Visual Relationship Graph
 - Powered by **Cytoscape.js**.
 - Visualizes interactive nodes linking suspects, IP addresses, malicious domains, compromised files, and related cases.
 - Helps investigators discover hidden connections between seemingly unrelated attacks.
 
-### 6. 📄 Automated Executive & Forensic Report Generator
+### 7. 📄 Automated Executive & Forensic Report Generator
 - Generate professional, branded **PDF** and **DOCX** reports with one click.
 - Includes executive summaries, timeline graphs, evidence lists, Threat Intel scores, and recommended remediation steps.
 

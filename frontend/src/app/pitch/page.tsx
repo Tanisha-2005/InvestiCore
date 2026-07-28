@@ -172,7 +172,7 @@ export default function ArchitecturePitchPage() {
               InvestiCore — Project Overview & System Architecture
             </h1>
             <p className="text-sm md:text-base text-gray-300 max-w-4xl leading-relaxed">
-              **InvestiCore** is an all-in-one digital forensic workstation and live threat intelligence platform built for Police Cyber Units, CERT Teams, and Security Operations Centers (SOC). It takes raw evidence (emails, screenshots, logs, network captures), automatically extracts indicators of compromise (IOCs), queries global threat feeds, visualizes threat actor networks, and exports court-admissible PDF packages.
+              <strong className="text-white font-bold">InvestiCore</strong> is an all-in-one digital forensic workstation and live threat intelligence platform built for Police Cyber Units, CERT Teams, and Security Operations Centers (SOC). It takes raw evidence (emails, screenshots, logs, network captures), automatically extracts indicators of compromise (IOCs), queries global threat feeds, visualizes threat actor networks, and exports court-admissible PDF packages.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-3">

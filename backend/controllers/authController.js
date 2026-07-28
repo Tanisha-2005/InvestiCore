@@ -70,11 +70,16 @@ exports.register = async (req, res) => {
     const otp = generate6DigitOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    // Smart Organization Fallback
+    const userOrg = organization && organization.trim() !== ""
+      ? organization.trim()
+      : (email.includes("@") ? email.split("@")[1].split(".")[0].toUpperCase() + " Cyber Division" : "Cyber Crime Unit");
+
     const user = await User.create({
       name: userName,
       email: email.toLowerCase(),
       password,
-      organization,
+      organization: userOrg,
       role: assignedRole,
       isEmailVerified: false,
       otp,
@@ -178,7 +183,7 @@ exports.resendOTP = async (req, res) => {
 // Google OAuth Sign-In / Register Endpoint
 exports.googleAuth = async (req, res) => {
   try {
-    const { email, name, google_id, role } = req.body;
+    const { email, name, google_id, role, organization } = req.body;
     if (!email) {
       return res.status(400).json({ message: "Email is required for Google Sign-In" });
     }
@@ -192,12 +197,16 @@ exports.googleAuth = async (req, res) => {
       let assignedRole = role || "investigator";
       if (assignedRole === "admin") assignedRole = "investigator";
 
+      const userOrg = organization && organization.trim() !== ""
+        ? organization.trim()
+        : (userEmail.includes("@") ? userEmail.split("@")[1].split(".")[0].toUpperCase() + " Agency" : "Google Authenticated Unit");
+
       user = await User.create({
         name: name || userEmail.split("@")[0],
         email: userEmail,
         password: randomPassword,
         role: assignedRole,
-        organization: "Google Authenticated User",
+        organization: userOrg,
         isEmailVerified: true, // Google pre-verifies emails!
       });
       console.log(`[Google Auth] Created new pre-verified user from Google: ${userEmail}`);
