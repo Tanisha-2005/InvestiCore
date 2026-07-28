@@ -467,6 +467,20 @@ export default function RegisterPage() {
               </div>
 
               <div>
+                <label className="block text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">
+                  Select Security Clearance Position Role
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full bg-gray-900 border border-amber-500/60 rounded-lg px-4 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none"
+                >
+                  <option value="investigator">Lead Investigator (Case Ownership & Evidence Custody)</option>
+                  <option value="analyst">Forensic Analyst (Threat Intel Sweep & IOC Graphs)</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
                   Department / Agency Organization
                 </label>
