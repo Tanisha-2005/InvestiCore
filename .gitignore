@@ -13,6 +13,8 @@ node_modules/
 **/out/
 **/build/
 **/dist/
+*.tsbuildinfo
+**/*.tsbuildinfo
 
 # Python
 __pycache__/
@@ -30,6 +32,10 @@ env.bak/
 venv.bak/
 .venv/
 **/.venv/
+
+# Uploads & temporary evidence files
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # Environment variables
 .env

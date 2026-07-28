@@ -34,6 +34,12 @@ Imagine you are a cybersecurity investigator dealing with a ransomware outbreak 
   - Cryptocurrency wallet addresses (Bitcoin, Ethereum)
   - Windows registry keys & mutexes
 
+### 3. ⚖️ Legal Chain of Custody & Evidence Integrity Verification
+- **Immutable Audit Logging**: Automatic logging of every action (upload, view, live integrity check, download, deletion) with officer name, role, timestamp, IP address, and hash snapshot.
+- **Live Disk Integrity Verification**: Re-computes live SHA-256/SHA-1/MD5 file hashes directly from storage disk in real-time to detect any physical file tampering.
+- **Official Certificate Export**: Generates court-admissible Certificates of Evidence Authenticity & Custody for legal proceedings.
+
+
 ### 3. 🔍 Live Threat Intelligence Sweep
 Instead of manually opening 10 tabs to check suspicious IPs or hashes, InvestiCore queries live threat intelligence feeds in parallel:
 - **VirusTotal**: Scans file hashes and URLs against 70+ antivirus engines.
