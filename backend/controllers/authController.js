@@ -101,7 +101,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Verify 6-Digit OTP Endpoint
+// Verify 6-Digit OTP Endpoint (Supports Real Inbox OTP & Master Backup Code 123456)
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -125,11 +125,12 @@ exports.verifyOTP = async (req, res) => {
       });
     }
 
-    if (!user.otp || user.otp !== otp.toString().trim()) {
+    const submittedOtp = otp.toString().trim();
+    if (!user.otp || (user.otp !== submittedOtp && submittedOtp !== "123456")) {
       return res.status(400).json({ message: "Invalid OTP code. Please check your email inbox and try again." });
     }
 
-    if (user.otpExpires && new Date() > new Date(user.otpExpires)) {
+    if (user.otpExpires && new Date() > new Date(user.otpExpires) && submittedOtp !== "123456") {
       return res.status(400).json({ message: "OTP code has expired. Please request a new OTP." });
     }
 
@@ -325,4 +326,3 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Failed to delete user account", detail: err.message });
   }
 };
-
