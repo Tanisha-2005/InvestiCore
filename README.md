@@ -58,7 +58,9 @@ npm run dev
 
 1. **Case Management**: Priority tracking, MITRE ATT&CK tagging, timeline management.
 2. **Evidence Vault**: OCR image reading, PDF/EML parsing, hash extraction (MD5, SHA256), IP/Domain/Hash IOC extractor.
-3. **Multi-Source Threat Intel Sweep**: Live threat score aggregations across VirusTotal, AbuseIPDB, Shodan, AlienVault, URLScan.
-4. **AI Forensics Assistant**: Conversational Q&A over evidence files, YARA rule generation, Sigma log rule generation.
-5. **Relationship Graph**: Interactive Cytoscape.js visual graph connecting suspects, IPs, domains, and cases.
-6. **Report Generator**: Branded PDF and DOCX investigation export.
+3. **Legal Chain of Custody**: Cryptographic SHA-256 live disk hash verification, immutable audit log (`CustodyLog`), and tamper detection.
+4. **Multi-Source Threat Intel Sweep**: Live threat score aggregations across VirusTotal, AbuseIPDB, Shodan, AlienVault, URLScan.
+5. **AI Forensics Assistant**: Conversational Q&A over evidence files, automated YARA rule generation, and Sigma log rule generation.
+6. **Relationship Graph**: Interactive Cytoscape.js visual graph connecting suspects, IPs, domains, and cases.
+7. **Court-Ready PDF Exporter**: One-click multi-page PDF evidence package exporter with ISO/IEC 27037 legal compliance seals.
+
