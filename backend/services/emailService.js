@@ -1,17 +1,25 @@
 const nodemailer = require("nodemailer");
 
-// Create Transporter (Optimized service: "gmail" for 100% instant email delivery)
+// Create Transporter with production fallback credentials for Render cloud deployment
 const getTransporter = () => {
-  const smtpUser = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
-  const smtpPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : null;
+  const smtpUser = (process.env.SMTP_USER || "guptatanishaji101@gmail.com").trim();
+  const smtpPass = (process.env.SMTP_PASS || "pcddzwpxiinatwjb").replace(/\s+/g, "");
 
   if (smtpUser && smtpPass) {
     return nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // Direct SSL Port 465 connection for cloud datacenters
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
     });
   }
   return null;
@@ -22,7 +30,7 @@ exports.sendOTPVerificationEmail = async (toEmail, name, otp) => {
     const transporter = getTransporter();
 
     const mailOptions = {
-      from: `"InvestiCore Security" <${process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@investicore.gov"}>`,
+      from: `"InvestiCore Security" <${process.env.SMTP_FROM || process.env.SMTP_USER || "guptatanishaji101@gmail.com"}>`,
       to: toEmail,
       subject: "🔒 InvestiCore Platform — Email Verification OTP Code",
       html: `
