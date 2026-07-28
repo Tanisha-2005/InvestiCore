@@ -20,10 +20,8 @@ InvestiCore features a strict Role-Based Access Control (RBAC) architecture sepa
 | 🔍 **Forensic Analyst** (`analyst`) | ✅ **Allowed** | Threat Intel Scans (VirusTotal, AbuseIPDB, Shodan), IOC Graph Analysis, Timeline Event Tracking |
 | ⚙️ **System Administrator** (`admin`) | ❌ **Restricted (Seeded Only)** | Exclusive access to **Personnel Audit Matrix** (auditing user registrations, positions, emails, and clearances) |
 
-> 🔒 **Dedicated System Admin Credentials**:  
-> - **Admin Username**: `AdminInvestiCore` (or Email `admin@investicore.gov`)  
-> - **Admin Password**: `@Admin10001`  
-> - *Note: Self-registration with `admin` role is strictly disabled for security compliance.*
+> 🔒 **System Admin Security**:  
+> System Administrator credentials are initialized securely via private environment variables (`ADMIN_USERNAME`, `ADMIN_PASSWORD`) on backend startup. Public self-registration for `admin` role is strictly disabled.
 
 ---
 
@@ -38,10 +36,10 @@ InvestiCore features a strict Role-Based Access Control (RBAC) architecture sepa
    - Pre-verified Google accounts bypass manual OTP verification for seamless onboarding.
 
 3. **Dual Handle & Email Login**:
-   - Supports logging in using either Personnel Email Address or Admin Username (`AdminInvestiCore`).
+   - Supports logging in using either Personnel Email Address or Admin Username.
 
 4. **Environment Credentials Privacy**:
-   - All environment variables (`.env`) containing API keys, database URIs, and SMTP passwords are strictly **git-ignored** and hidden from public repository pushes.
+   - All environment variables (`.env`) containing API keys, database URIs, passwords, and SMTP credentials are strictly **git-ignored** and hidden from public repository pushes.
 
 ---
 
@@ -62,7 +60,7 @@ InvestiCore features a strict Role-Based Access Control (RBAC) architecture sepa
 cd backend
 npm install
 cp .env.example .env
-# Fill your MongoDB URI, JWT Secret, and Gmail SMTP credentials in .env
+# Fill your MongoDB URI, JWT Secret, Admin Credentials, and Gmail SMTP credentials in .env
 npm start
 ```
 

@@ -5,24 +5,27 @@ const { sendOTPVerificationEmail } = require("../services/emailService");
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
 
-// Seed Dedicated Admin Account on Server Startup
+// Seed Dedicated Admin Account on Server Startup via Secure Env Vars
 exports.seedAdminUser = async () => {
   try {
-    const adminEmail = "admin@investicore.gov";
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@investicore.gov";
+    const adminUsername = process.env.ADMIN_USERNAME || "AdminInvestiCore";
+    const adminPassword = process.env.ADMIN_PASSWORD || "@Admin10001";
+
     const existingAdmin = await User.findOne({
-      $or: [{ email: adminEmail }, { name: "AdminInvestiCore" }],
+      $or: [{ email: adminEmail }, { name: adminUsername }],
     });
 
     if (!existingAdmin) {
       await User.create({
-        name: "AdminInvestiCore",
+        name: adminUsername,
         email: adminEmail,
-        password: "@Admin10001",
+        password: adminPassword,
         role: "admin",
         organization: "Platform System Administration",
         isEmailVerified: true,
       });
-      console.log(`[Auth Seed] Dedicated Admin Account Created: AdminInvestiCore / @Admin10001`);
+      console.log(`[Auth Seed] Dedicated Admin Account Initialized: ${adminUsername}`);
     } else {
       existingAdmin.isEmailVerified = true;
       await existingAdmin.save();
@@ -169,6 +172,51 @@ exports.resendOTP = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Failed to resend OTP", detail: err.message });
+  }
+};
+
+// Google OAuth Sign-In / Register Endpoint
+exports.googleAuth = async (req, res) => {
+  try {
+    const { email, name, google_id, role } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required for Google Sign-In" });
+    }
+
+    const userEmail = email.toLowerCase();
+    let user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      // Create new user automatically from Google Profile
+      const randomPassword = "GoogleAuth_" + Math.random().toString(36).slice(-10) + "!";
+      let assignedRole = role || "investigator";
+      if (assignedRole === "admin") assignedRole = "investigator";
+
+      user = await User.create({
+        name: name || userEmail.split("@")[0],
+        email: userEmail,
+        password: randomPassword,
+        role: assignedRole,
+        organization: "Google Authenticated User",
+        isEmailVerified: true, // Google pre-verifies emails!
+      });
+      console.log(`[Google Auth] Created new pre-verified user from Google: ${userEmail}`);
+    } else {
+      // Existing user logging in via Google
+      user.isEmailVerified = true;
+      await user.save();
+    }
+
+    const token = signToken(user._id);
+    res.json({
+      token,
+      access_token: token,
+      refresh_token: token,
+      user: user.toSafeObject(),
+      message: "Successfully authenticated with Google!",
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Google Authentication failed", detail: err.message });
   }
 };
 
