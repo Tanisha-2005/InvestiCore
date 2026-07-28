@@ -1,15 +1,21 @@
 const nodemailer = require("nodemailer");
 
-// Create Transporter (Optimized for Gmail SMTP & custom SMTP servers)
+// Create Transporter (Optimized for Gmail SMTP & cloud hosting environments like Render)
 const getTransporter = () => {
-  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+  const smtpUser = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
+  const smtpPass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : null;
+
+  if (smtpUser && smtpPass) {
     // Gmail Transport Optimization
-    if (process.env.SMTP_HOST === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail") {
+    if (process.env.SMTP_HOST === "smtp.gmail.com" || process.env.SMTP_SERVICE === "gmail" || smtpUser.endsWith("@gmail.com")) {
       return nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+          user: smtpUser,
+          pass: smtpPass,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       });
     }
@@ -19,8 +25,11 @@ const getTransporter = () => {
       port: Number(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === "true",
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: smtpUser,
+        pass: smtpPass,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
   }
