@@ -86,8 +86,10 @@ exports.register = async (req, res) => {
       otpExpires,
     });
 
-    // Send OTP Verification Email to user's real email inbox
-    await sendOTPVerificationEmail(user.email, user.name, otp);
+    // Send OTP Verification Email to user's real email inbox (Non-blocking background delivery for instant response)
+    sendOTPVerificationEmail(user.email, user.name, otp).catch((err) =>
+      console.error(`[Background OTP Error] ${err.message}`)
+    );
 
     res.status(201).json({
       require_otp: true,
@@ -168,7 +170,9 @@ exports.resendOTP = async (req, res) => {
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    await sendOTPVerificationEmail(user.email, user.name, newOtp);
+    sendOTPVerificationEmail(user.email, user.name, newOtp).catch((err) =>
+      console.error(`[Background OTP Error] ${err.message}`)
+    );
 
     res.json({
       success: true,
@@ -260,7 +264,9 @@ exports.login = async (req, res) => {
       user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
       await user.save();
 
-      await sendOTPVerificationEmail(user.email, user.name, newOtp);
+      sendOTPVerificationEmail(user.email, user.name, newOtp).catch((err) =>
+        console.error(`[Background OTP Error] ${err.message}`)
+      );
 
       return res.status(403).json({
         require_otp: true,
