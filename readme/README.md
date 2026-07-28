@@ -18,6 +18,9 @@ Click any link below to jump directly to the specific guide you need:
    - Complete reference for `.env` keys, obtaining free threat intelligence API keys, and endpoint routes.
 5. ❓ [**05. Troubleshooting & FAQs**](./05_TROUBLESHOOTING_&_FAQS.md)
    - Answers to common questions, port conflict fixes, and troubleshooting steps.
+6. 🚀 [**06. Render Deployment Guide**](./06_RENDER_DEPLOYMENT_GUIDE.md)
+   - Step-by-step instructions for deploying backend and frontend live on Render.com.
+
 
 ---
 
