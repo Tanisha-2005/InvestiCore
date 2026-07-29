@@ -10,6 +10,11 @@ InvestiCore is a full-stack, enterprise-grade Digital Forensics and Cyber Crime 
 
 ---
 
+## 🔴 Live Demo
+You can easily watch and try out the live project here: **[InvestiCore Live App](https://investicore-frontend.onrender.com)**
+
+---
+
 ## 👥 Role Hierarchy & Access Control (RBAC)
 
 InvestiCore features a strict Role-Based Access Control (RBAC) architecture separating general personnel from administrative oversight:
